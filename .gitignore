@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Local env files
+*.env
+*.local
+
+# Virtual environments
+.venv
+
+# uv lock file (optional)
+uv.lock
+
+
+app/tracker.db
+Idea.md
+app/rough.py
+docs/
