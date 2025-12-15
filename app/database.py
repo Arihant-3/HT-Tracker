@@ -1,18 +1,9 @@
-from sqlmodel import SQLModel, Field, create_engine, Session
-from typing import Optional
-from datetime import date
-
-class Habit(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str
-    category: Optional[str] = None
-
-class HabitLog(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    habit_id: int
-    date: date
-    value: int
-    note: Optional[str] = None
+from sqlmodel import SQLModel, create_engine, Session
 
 engine = create_engine("sqlite:///tracker.db", connect_args={"check_same_thread": False})
-# SQLModel.metadata.create_all(engine)
+SQLModel.metadata.create_all(engine)
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+    

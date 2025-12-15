@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h2>Create Habit</h2>
+
+  <form method="post" action="/habit/form">
+    <input name="name" placeholder="Habit name" required />
+    <input name="category" placeholder="Category" />
+    <button type="submit">Add</button>
+  </form>
+
+  <h2>Habits</h2>
+  <ul>
+    {% for habit in habits %}
+      <li>{{ habit.name }} ({{ habit.category or "No category" }})</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
