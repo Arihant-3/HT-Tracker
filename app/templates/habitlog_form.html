@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h2>Log Habit: {{ habit.name }}</h2>
+
+    <form method="post" action="/habits/{{ habit.id }}/form">
+        <input name="value" placeholder="Minutes" required>
+        <input name="note" placeholder="Note">
+        <button type="submit">Log</button>
+    </form>
+
+    <h2>Habit Logs</h2>
+    <ul>
+        {% for log in logs %}
+        <li>
+            {{ log.date }} — {{ log.value }} min
+            ({{ log.note or "No note" }})
+        </li>
+        {% else %}
+        <li>No logs yet</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

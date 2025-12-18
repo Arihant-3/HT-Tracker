@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Depends
 import uvicorn 
+from datetime import date
 from sqlmodel import Session, text, select
 from database import engine
-from models import Habit
+from models import Habit, HabitLog
 
 # For templates and forms
 from fastapi.templating import Jinja2Templates
@@ -25,8 +26,9 @@ from database import get_session
 async def root():
     return {"message": "This is the example file of Habit-Time Tracker!"}
 
+# Create habit via form
 @app.post("/habit/form")
-async def create_habit_form(
+def create_habit(
     name: str = Form(...),
     category: str | None = Form(None),
     session: Session = Depends(get_session)
@@ -48,14 +50,67 @@ async def create_habit_form(
     
     return RedirectResponse(url="/habits", status_code=303)
 
+
+# Create habit via API
+# @app.post("/habit")
+# def create_habit_api(
+#     habit: schemas.HabitCreate,
+#     session: Session = Depends(get_session)
+# ):
+#     db_habit = Habit(**habit.model_dump())
+#     session.add(db_habit)
+#     session.commit()
+#     session.refresh(db_habit)
+#     return db_habit
+
+
 @app.get("/habits")
-def habits_page(request: Request, session=Depends(get_session)):
+def habits_page(request: Request, session: Session = Depends(get_session)):
     habits = session.exec(select(Habit)).all()
     return templates.TemplateResponse(
         "habits.html",
         {"request": request, "habits": habits}
     )
 
+# Create habit log via form
+@app.post("/habits/{habit_id}/form")
+def create_habitlog(
+    habit_id: int,
+    value: int = Form(...),
+    note: str | None = Form(None),
+    session: Session = Depends(get_session)
+):
+    
+    # Create the habit log entry for the given habit_id
+    log = HabitLog(
+        habit_id = habit_id,
+        date = date.today(),
+        value = value,
+        note = note
+    )
+    
+    session.add(log)
+    session.commit()
+    session.refresh(log)
+    
+    return RedirectResponse(url=f"/habits/{habit_id}/log", status_code=303)
+
+@app.get("/habits/{habit_id}/log")
+def habitlog_page(
+    habit_id: int,
+    request: Request,
+    session: Session = Depends(get_session)
+):
+    habit = session.get(Habit, habit_id)
+    if not habit:
+        raise HTTPException(status_code=404, detail="Habit not found")
+    
+    logs = session.exec(select(HabitLog).where(HabitLog.habit_id == habit_id)).all()
+    
+    return templates.TemplateResponse(
+        "habitlog_form.html",
+        {"request": request, "habit": habit, "logs": logs}
+    )
 
 
 

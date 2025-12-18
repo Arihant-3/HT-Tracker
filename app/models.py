@@ -9,7 +9,7 @@ class Habit(SQLModel, table=True):
 
 class HabitLog(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    habit_id: int
+    habit_id: int = Field(foreign_key="habit.id")
     date: date
     value: int
     note: Optional[str] = None

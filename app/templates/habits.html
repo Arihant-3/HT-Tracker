@@ -12,7 +12,9 @@
   <h2>Habits</h2>
   <ul>
     {% for habit in habits %}
+      
       <li>{{ habit.name }} ({{ habit.category or "No category" }})</li>
+      <a href="/habits/{{ habit.id }}/log">Log</a>
     {% endfor %}
   </ul>
 </body>
