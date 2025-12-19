@@ -10,12 +10,14 @@
   </form>
 
   <h2>Habits</h2>
-  <ul>
+  <ol>
     {% for habit in habits %}
-      
-      <li>{{ habit.name }} ({{ habit.category or "No category" }})</li>
+      <li>
+        {{ habit.name }} ({{ habit.category or "No category" }}) --- {{ habit.log_count or 0 }} logs
+      </li>
       <a href="/habits/{{ habit.id }}/log">Log</a>
     {% endfor %}
-  </ul>
+  </ol>
+  <p>Total number of habits: {{ total_habit }}</p>
 </body>
 </html>

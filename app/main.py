@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 import uvicorn 
 from datetime import date
-from sqlmodel import Session, text, select
+from sqlmodel import Session, text, select, func
 from database import engine
 from models import Habit, HabitLog
 
@@ -34,16 +34,18 @@ def create_habit(
     session: Session = Depends(get_session)
 ): 
     # Check if habit with same name already exists
-    statement = select(Habit).where(Habit.name == name)
-    existing_habit = session.exec(statement).first()
+    stmt = select(Habit).where(Habit.name == name)
+    existing_habit = session.exec(stmt).first()
     
     if existing_habit:
         raise HTTPException(status_code=400, detail="Habit with this name already exists")
     
-    db_habit = Habit(
+    db_habit = schemas.HabitCreate(
         name = name,
         category = category
     )
+    db_habit = Habit(**db_habit.model_dump())
+    
     session.add(db_habit)
     session.commit()
     session.refresh(db_habit)
@@ -66,10 +68,25 @@ def create_habit(
 
 @app.get("/habits")
 def habits_page(request: Request, session: Session = Depends(get_session)):
-    habits = session.exec(select(Habit)).all()
+    
+    count_stmt = text("SELECT COUNT(*) FROM habit")
+    total_habit = session.scalar(count_stmt)
+    
+    count_log_per_habit = text('''SELECT h.id, h.name, h.category, COUNT(hl.id) AS log_count
+                               FROM habit AS h
+                               LEFT JOIN habitlog AS hl
+                               ON h.id = hl.habit_id
+                               GROUP BY h.id, h.name, h.category
+                               ''')
+    habits = session.exec(count_log_per_habit)
+    
     return templates.TemplateResponse(
         "habits.html",
-        {"request": request, "habits": habits}
+        {
+            "request": request, 
+            "habits": habits, 
+            "total_habit": total_habit
+        }
     )
 
 # Create habit log via form
@@ -80,14 +97,14 @@ def create_habitlog(
     note: str | None = Form(None),
     session: Session = Depends(get_session)
 ):
-    
     # Create the habit log entry for the given habit_id
-    log = HabitLog(
+    log = schemas.HabitLogCreate(
         habit_id = habit_id,
         date = date.today(),
         value = value,
         note = note
     )
+    log = HabitLog(**log.model_dump())
     
     session.add(log)
     session.commit()
@@ -107,9 +124,33 @@ def habitlog_page(
     
     logs = session.exec(select(HabitLog).where(HabitLog.habit_id == habit_id)).all()
     
+    stmt = (
+        select(
+            HabitLog.date,
+            func.sum(HabitLog.value).label("total_value")
+        )
+        .where(HabitLog.habit_id == habit_id)
+        .group_by(HabitLog.date)
+    )
+    result = session.exec(stmt).all()
+    grouped_logs = list(result)
+    
+    # Alternative raw SQL approach
+    # stmt = text('''SELECT date, SUM(value) AS total_value 
+    #                     FROM habitlog
+    #                     WHERE habit_id = :habit_id
+    #                     GROUP BY date''')
+    # grouped_logs = session.exec(stmt.params(habit_id=habit_id))
+    
+    
     return templates.TemplateResponse(
         "habitlog_form.html",
-        {"request": request, "habit": habit, "logs": logs}
+        {
+            "request": request, "habit": habit, 
+            "logs": logs, 
+            "grouped_logs": grouped_logs,
+            
+        }
     )
 
 

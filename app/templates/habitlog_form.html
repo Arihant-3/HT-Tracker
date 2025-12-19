@@ -20,5 +20,14 @@
         <li>No logs yet</li>
         {% endfor %}
     </ul>
+    <h2>Daily Totals</h2>
+    <ul>
+        {% for row in grouped_logs %}
+        <li>
+            {{ row.date }} — {{ row.total_value }} min
+        </li>
+        {% else %}
+        <li>No totals yet</li>
+        {% endfor %}
 </body>
 </html>
