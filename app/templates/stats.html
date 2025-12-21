@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h2>Weekly Stats for Habit: {{ habit.name }}</h2>
+
+    <h3>Daily Totals for the Last 7 Days</h3>
+    <ul>
+        {% for row in weekly_stats.daily %}
+        <li>
+            {{ row.date }} — {{ row.total_minutes }} min
+        </li>
+        {% else %}
+        <li>No data available</li>
+        {% endfor %}
+    </ul>
+    <h3>Total Minutes This Week: {{ weekly_stats.total_week }} min</h3>
+    <h3>Average Minutes Per Day: {{ weekly_stats.avg_per_day }} min</h3>
+    
+    <a href="/habits/{{ habit.id }}/log">Back to Logs</a>
+</body>
+</html>

@@ -4,6 +4,7 @@ from datetime import date
 from sqlmodel import Session, text, select, func
 from database import engine
 from models import Habit, HabitLog
+from utils import stats_func as stats
 
 # For templates and forms
 from fastapi.templating import Jinja2Templates
@@ -144,7 +145,7 @@ def habitlog_page(
     
     
     return templates.TemplateResponse(
-        "habitlog_form.html",
+        "logs.html",
         {
             "request": request, "habit": habit, 
             "logs": logs, 
@@ -153,9 +154,64 @@ def habitlog_page(
         }
     )
 
-
-
-
+@app.get("/habits/{habit_id}/stats")
+def get_stats(
+    habit_id: int,
+    request: Request,
+    session: Session = Depends(get_session)
+):
+    # Get habit details
+    habit = session.get(Habit, habit_id)
+    if not habit:
+        raise HTTPException(status_code=404, detail="Habit not found")
+  
+    # Calculate weekly stats
+    week_day = 7
+    
+    start_date_check = session.exec(
+        select(func.min(HabitLog.date)).where(HabitLog.habit_id == habit_id)
+    ).first()
+    
+    if not start_date_check or not stats.check_data_sufficiency(
+        first_day=start_date_check, 
+        required_days=week_day
+    ):
+        return templates.TemplateResponse(
+            "error.html",
+            {
+                "request": request,
+                "habit": habit,
+                "message": "Not enough data to generate stats. Please log data."
+            }
+        )
+    
+    daily_aggregations = stats.prepare_daily_aggregation_list(
+        session=session,
+        habit_id=habit_id,
+        required_days=week_day
+    )
+    
+    total_week = sum(da.total_minutes for da in daily_aggregations)
+    avg_per_day = round(total_week / week_day, 2)
+    
+    weekly_stats = (schemas.WeeklyStats(
+        habit_id=habit.id,
+        habit_name=habit.name,
+        daily=daily_aggregations,
+        total_week=total_week,
+        avg_per_day=avg_per_day
+    ))
+    
+    return templates.TemplateResponse(
+        "stats.html",
+        {
+            "request": request, "habit": habit,
+            "weekly_stats": weekly_stats
+        }
+    )
+    
+    
+    
 # Delete everything for testing purpose
 @app.delete("/delete_all")
 def delete_all(session: Session = Depends(get_session)):
