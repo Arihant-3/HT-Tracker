@@ -1,23 +1,57 @@
 <!DOCTYPE html>
 <html>
+
+<head>
+  <title>HT-Tracker - Habits</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+
 <body>
-  <h2>Create Habit</h2>
+  <div class="window">
+    <div class="title-bar">
+      <div class="title-bar-text">Habit Tracker 98</div>
+      <div class="title-bar-controls">
+        <div class="title-btn">_</div>
+        <div class="title-btn">[]</div>
+        <div class="title-btn">X</div>
+      </div>
+    </div>
 
-  <form method="post" action="/habit/form">
-    <input name="name" placeholder="Habit name" required />
-    <input name="category" placeholder="Category" />
-    <button type="submit">Add</button>
-  </form>
+    <div class="window-body">
+      <h2>Create New Habit</h2>
+      <form method="post" action="/habit/form">
+        <input type="text" name="name" placeholder="Enter habit name..." required autocomplete="off">
+        <input type="text" name="category" placeholder="Enter category..." autocomplete="off">
+        <button type="submit">Add Habit</button>
+      </form>
 
-  <h2>Habits</h2>
-  <ol>
-    {% for habit in habits %}
-      <li>
-        {{ habit.name }} ({{ habit.category or "No category" }}) --- {{ habit.log_count or 0 }} logs
-      </li>
-      <a href="/habits/{{ habit.id }}/log">Log</a>
-    {% endfor %}
-  </ol>
-  <p>Total number of habits: {{ total_habit }}</p>
+      <div style="margin: 20px 0; border-top: 2px solid #808080; border-bottom: 2px solid #ffffff; height: 0;"></div>
+
+      <h2>Active Habits</h2>
+      {% if habits %}
+      {% for habit in habits %}
+      <div class="habit-list-item">
+        <div style="display: flex; flex-direction: column;">
+          <span style="font-weight: bold;">{{ habit.name }}</span>
+          <span style="font-size: 12px; color: #555;">Category: {{ habit.category or "None" }}</span>
+        </div>
+        <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+          <span style="font-size: 12px;">{{ habit.log_count or 0 }} Logs</span>
+          <div style="display: flex; gap: 10px;">
+            <a href="/habits/{{ habit.id }}/log">Open</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <p>No habits found. Start by adding one above.</p>
+      {% endif %}
+
+      <div class="status-bar">
+        <p style="margin: 0;">Total Habits: {{ total_habit }}</p>
+      </div>
+    </div>
+  </div>
 </body>
+
 </html>

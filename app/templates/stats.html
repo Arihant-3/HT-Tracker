@@ -1,21 +1,62 @@
 <!DOCTYPE html>
 <html>
-<body>
-    <h2>Weekly Stats for Habit: {{ habit.name }}</h2>
 
-    <h3>Daily Totals for the Last 7 Days</h3>
-    <ul>
-        {% for row in weekly_stats.daily %}
-        <li>
-            {{ row.date }} — {{ row.total_minutes }} min
-        </li>
-        {% else %}
-        <li>No data available</li>
-        {% endfor %}
-    </ul>
-    <h3>Total Minutes This Week: {{ weekly_stats.total_week }} min</h3>
-    <h3>Average Minutes Per Day: {{ weekly_stats.avg_per_day }} min</h3>
-    
-    <a href="/habits/{{ habit.id }}/log">Back to Logs</a>
+<head>
+    <title>Statistics - {{ habit.name }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="window">
+        <div class="title-bar">
+            <div class="title-bar-text">Statistics Viewer</div>
+            <div class="title-bar-controls">
+                <div class="title-btn">_</div>
+                <div class="title-btn">X</div>
+            </div>
+        </div>
+
+        <div class="window-body">
+            <div style="margin-bottom: 20px;">
+                <a href="/habits/{{ habit.id }}/log">
+                    << Back to Logs</a>
+            </div>
+
+            <h2>Weekly Report: {{ habit.name }}</h2>
+
+            <div style="background: white; border: 2px inset gray; padding: 10px; margin-bottom: 20px;">
+                <h3>Summary</h3>
+                <p><strong>Total (Last 7 Days):</strong> {{ weekly_stats.total_week }} min</p>
+                <p><strong>Daily Average:</strong> {{ weekly_stats.avg_per_day }} min/day</p>
+            </div>
+
+            <h3>Daily Breakdown</h3>
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <thead>
+                    <tr style="text-align: left;">
+                        <th style="border-bottom: 1px solid black;">Date</th>
+                        <th style="border-bottom: 1px solid black;">Minutes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in weekly_stats.daily %}
+                    <tr>
+                        <td style="padding: 4px 0;">{{ row.date }}</td>
+                        <td style="padding: 4px 0;">{{ row.total_minutes }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="2">No data available for this period.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="status-bar">
+                Generated at: {% if weekly_stats.daily %}{{ weekly_stats.daily[0].date }}{% endif %}
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>

@@ -1,39 +1,81 @@
-{# This is how you comment in Jinja2 #}
 <!DOCTYPE html>
 <html>
+
+<head>
+    <title>Logging - {{ habit.name }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
 <body>
-    <h2>Log Habit: {{ habit.name }}</h2>
+    <div class="window">
+        <div class="title-bar">
+            <div class="title-bar-text">Log Entry: {{ habit.name }}</div>
+            <div class="title-bar-controls">
+                <div class="title-btn">?</div>
+                <div class="title-btn">X</div>
+            </div>
+        </div>
 
-    <form method="post" action="/habits/{{ habit.id }}/form">
-        <input name="value" placeholder="Minutes" required>
-        <input name="note" placeholder="Note">
-        <button type="submit">Log</button>
-    </form>
+        <div class="window-body">
+            <div style="margin-bottom: 20px;">
+                <a href="/habits">
+                    << Back to Manager</a>
+            </div>
 
-    <h2>Habit Logs</h2>
-    <ul>
-        {% for log in logs %}
-        <li>
-            {{ log.date }} — {{ log.value }} min
-            ({{ log.note or "No note" }})
-        </li>
-        {% else %}
-        <li>No logs yet</li>
-        {% endfor %}
-    </ul>
-    <h2>Daily Totals</h2>
-    <ul>
-        {% for row in grouped_logs %}
-        <li>
-            {{ row.date }} — {{ row.total_value }} min
-        </li>
-        {% else %}
-        <li>No totals yet</li>
-        {% endfor %}
-    </ul>
+            <h2>Log Activity</h2>
+            <form method="post" action="/habits/{{ habit.id }}/form">
+                <label style="display: block; margin-bottom: 5px;">Duration (minutes):</label>
+                <input type="number" name="value" placeholder="0" required>
 
-    <a href="/habits/{{ habit.id }}/stats">View Weekly Stats</a>
-    <br>
-    <a href="/habits/">Back to Habits</a>
+                <label style="display: block; margin-bottom: 5px;">Notes:</label>
+                <input type="text" name="note" placeholder="Optional details...">
+
+                <button type="submit">Save Entry</button>
+                <a href="/habits/{{ habit.id }}/stats" style="margin-left: 10px;">View Stats</a>
+            </form>
+
+            <div style="margin: 20px 0; border-top: 2px solid #808080; border-bottom: 2px solid #ffffff; height: 0;">
+            </div>
+
+            <div style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                    <h3>Recent Logs</h3>
+                    <div
+                        style="height: 150px; overflow-y: auto; background: white; border: 2px inset gray; padding: 5px;">
+                        {% for log in logs|reverse %}
+                        <div
+                            style="margin-bottom: 4px; border-bottom: 1px dotted #ccc; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: start;">
+                            <div>
+                                <strong>{{ log.date }}</strong>: {{ log.value }} min<br>
+                                <span style="font-size: 11px; font-style: italic;">{{ log.note or "" }}</span>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div>No logs recorded.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div style="flex: 1;">
+                    <h3>Daily Summaries</h3>
+                    <div
+                        style="height: 150px; overflow-y: auto; background: white; border: 2px inset gray; padding: 5px;">
+                        {% for row in grouped_logs|reverse %}
+                        <div style="margin-bottom: 4px;">
+                            <strong>{{ row.date }}</strong>: {{ row.total_value }} min total
+                        </div>
+                        {% else %}
+                        <div>No data.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                Active Habit: {{ habit.name }}
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>

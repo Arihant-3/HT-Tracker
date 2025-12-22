@@ -1,8 +1,32 @@
 <!DOCTYPE html>
 <html>
+
+<head>
+    <title>Error</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
 <body>
-    <h2>Error</h2>
-    <p>{{ message }}</p>
-    <a href="/habits/{{ habit.id }}/log">Back to Logs</a>
+    <div class="window" style="max-width: 400px;">
+        <div class="title-bar" style="background: red; background: linear-gradient(90deg, #800000, #ff0000);">
+            <div class="title-bar-text">System Error</div>
+            <div class="title-bar-controls">
+                <div class="title-btn">X</div>
+            </div>
+        </div>
+
+        <div class="window-body" style="text-align: center;">
+            <div style="font-size: 48px; color: red; margin: 10px 0;">⚠</div>
+            <h3>An error has occurred</h3>
+            <p style="margin: 20px 0; border: 2px inset gray; padding: 10px; background: white;">
+                {{ message }}
+            </p>
+
+            <button onclick="history.back()">OK</button>
+            <br><br>
+            <a href="/habits" style="font-size: 12px;">Return to Main Menu</a>
+        </div>
+    </div>
 </body>
+
 </html>

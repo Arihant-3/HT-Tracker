@@ -11,10 +11,15 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 from fastapi import Request, Form, HTTPException
 
+from fastapi.staticfiles import StaticFiles
+
 templates = Jinja2Templates(directory="app/templates")
 
 # Create a FastAPI Instance
 app = FastAPI()
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Getting data models from schemas
 import app.schemas as schemas
@@ -52,19 +57,6 @@ def create_habit(
     session.refresh(db_habit)
     
     return RedirectResponse(url="/habits", status_code=303)
-
-
-# Create habit via API
-# @app.post("/habit")
-# def create_habit_api(
-#     habit: schemas.HabitCreate,
-#     session: Session = Depends(get_session)
-# ):
-#     db_habit = Habit(**habit.model_dump())
-#     session.add(db_habit)
-#     session.commit()
-#     session.refresh(db_habit)
-#     return db_habit
 
 
 @app.get("/habits")
@@ -136,14 +128,6 @@ def habitlog_page(
     result = session.exec(stmt).all()
     grouped_logs = list(result)
     
-    # Alternative raw SQL approach
-    # stmt = text('''SELECT date, SUM(value) AS total_value 
-    #                     FROM habitlog
-    #                     WHERE habit_id = :habit_id
-    #                     GROUP BY date''')
-    # grouped_logs = session.exec(stmt.params(habit_id=habit_id))
-    
-    
     return templates.TemplateResponse(
         "logs.html",
         {
@@ -209,18 +193,7 @@ def get_stats(
             "weekly_stats": weekly_stats
         }
     )
-    
-    
-    
-# Delete everything for testing purpose
-@app.delete("/delete_all")
-def delete_all(session: Session = Depends(get_session)):
-    session.exec(text("DELETE FROM habitlog"))
-    session.exec(text("DELETE FROM habit"))
-    
-    session.commit()
-    return {"message": "All data deleted successfully"}
-    
+
 
 # Run the FastAPI server
 def main():
