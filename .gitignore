@@ -17,7 +17,7 @@ wheels/
 uv.lock
 
 
-app/tracker.db
+tracker.db
 Idea.md
 app/rough.py
 docs/

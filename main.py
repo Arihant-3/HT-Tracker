@@ -2,25 +2,25 @@ from fastapi import FastAPI, Depends
 import uvicorn 
 from datetime import date
 from sqlmodel import Session, text, select, func
-from database import engine
-from models import Habit, HabitLog
-from utils import stats_func as stats
+from app.database import engine
+from app.models import Habit, HabitLog
+from app.utils import stats_func as stats
 
 # For templates and forms
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 from fastapi import Request, Form, HTTPException
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="app/templates")
 
 # Create a FastAPI Instance
 app = FastAPI()
 
 # Getting data models from schemas
-import schemas
+import app.schemas as schemas
 
 # Access data from the database(sql) for CRUD operations
-from database import get_session
+from app.database import get_session
 
 # Define CRUD Endpoints
 @app.get("/")
