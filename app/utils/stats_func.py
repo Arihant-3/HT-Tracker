@@ -21,10 +21,10 @@ def prepare_daily_aggregation_list(
     end_date: date = date.today()
 ):
     """Prepare a list of DailyAggregation for the past required_days."""
-    from schemas import DailyAggregation
+    from app.schemas import DailyAggregation
     from datetime import timedelta
     from sqlmodel import select, func
-    from models import HabitLog
+    from app.models import HabitLog
     
     start_date = end_date - timedelta(days=required_days - 1)
     
