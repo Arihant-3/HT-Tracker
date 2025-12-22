@@ -39,6 +39,9 @@
           <span style="font-size: 12px;">{{ habit.log_count or 0 }} Logs</span>
           <div style="display: flex; gap: 10px;">
             <a href="/habits/{{ habit.id }}/log">Open</a>
+            <form action="/habits/{{ habit.id }}/delete" method="post" style="margin: 0; display: inline;">
+              <button type="submit" class="delete-btn">Delete</button>
+            </form>
           </div>
         </div>
       </div>
@@ -52,6 +55,19 @@
       </div>
     </div>
   </div>
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-title">Are you sure?</div>
+      <div class="modal-text">This will permanently delete this habit and all its logs.</div>
+      <div class="modal-actions">
+        <button id="cancelBtn" class="btn-secondary" style="min-width: 80px;">Cancel</button>
+        <button id="confirmBtn" class="btn-danger" style="min-width: 80px;">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/script/confirm-modal.js"></script>
 </body>
 
 </html>

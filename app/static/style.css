@@ -267,6 +267,70 @@ a:hover {
     text-align: center;
 }
 
+/* Remove 90s specific separators if present with inline styles in HTML, 
+   but we can try to override them if possible or just ignore. 
+   Common reset/overrides: */
+hr,
+div[style*="border-top"] {
+    border-color: #E2E8F0 !important;
+    border-bottom: none !important;
+    margin: 24px 0 !important;
+}
+
+.delete-btn {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    color: #EF4444 !important;
+    /* Red 500 */
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    min-width: auto !important;
+    width: auto !important;
+    display: inline-block !important;
+    transform: none !important;
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+.delete-btn:hover {
+    color: #DC2626 !important;
+    /* Red 600 */
+    text-decoration: underline !important;
+    transform: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+/* Custom Confirmation Modal */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+}
+
+.modal-window {
+    background: var(--glass-bg);
+    padding: 24px;
+    border-radius: var(--radius-window);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--glass-border);
+    width: 300px;
+    text-align: center;
+    animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 @keyframes popIn {
     from {
         transform: scale(0.9);

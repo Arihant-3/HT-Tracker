@@ -193,7 +193,43 @@ def get_stats(
             "weekly_stats": weekly_stats
         }
     )
+    
+    
+# Delete a habit and its logs
+@app.post("/habits/{habit_id}/delete")
+def delete_habit(
+    habit_id: int, 
+    session: Session = Depends(get_session)
+):
+    habit = session.get(Habit, habit_id)
+    if not habit:
+        raise HTTPException(status_code=404, detail="Habit not found")
+    
+    # Delete associated logs first
+    logs = session.exec(select(HabitLog).where(HabitLog.habit_id == habit_id)).all()
+    for log in logs:
+        session.delete(log)
+        
+    session.delete(habit)
+    session.commit()
+    
+    return RedirectResponse(url="/habits", status_code=303)
 
+# Delete a specific log
+@app.post("/logs/{log_id}/delete")
+def delete_log(
+    log_id: int,
+    session: Session = Depends(get_session)
+):
+    log = session.get(HabitLog, log_id)
+    if not log:
+        raise HTTPException(status_code=404, detail="Log not found")
+        
+    habit_id = log.habit_id
+    session.delete(log)
+    session.commit()
+    
+    return RedirectResponse(url=f"/habits/{habit_id}/log", status_code=303)
 
 # Run the FastAPI server
 def main():
