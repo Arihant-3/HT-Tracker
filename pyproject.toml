@@ -1,7 +1,10 @@
 [project]
 name = "ht-tracker"
-version = "0.1.0"
-description = "Add your description here"
+version = "1.0.0"
+description = "A simple, structured end-to-end project, developed to learn backend architecture, database migrations, and full-stack integration."
+authors = [
+    { name = "Aryan Burnwal", email = "work.aburnwal@gmail.com" }
+]
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

@@ -13,11 +13,5 @@ wheels/
 # Virtual environments
 .venv
 
-# uv lock file (optional)
-uv.lock
-
-
 tracker.db
 Dump/
-app/rough.py
-docs/
