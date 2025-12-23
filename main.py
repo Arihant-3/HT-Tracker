@@ -27,11 +27,6 @@ import app.schemas as schemas
 # Access data from the database(sql) for CRUD operations
 from app.database import get_session
 
-# Define CRUD Endpoints
-@app.get("/")
-async def root():
-    return {"message": "This is the example file of Habit-Time Tracker!"}
-
 # Create habit via form
 @app.post("/habit/form")
 def create_habit(
@@ -58,6 +53,9 @@ def create_habit(
     
     return RedirectResponse(url="/habits", status_code=303)
 
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/habits")
 
 @app.get("/habits")
 def habits_page(request: Request, session: Session = Depends(get_session)):
