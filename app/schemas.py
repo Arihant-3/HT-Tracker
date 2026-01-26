@@ -51,3 +51,16 @@ class WeeklyStats(BaseModel):
     avg_per_day: float
     
 
+class UserCreate(BaseModel):
+    username: str
+    email: str
+    password: str
+
+class UserRead(BaseModel):
+    id: int
+    username: str
+    email: str
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
