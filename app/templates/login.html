@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>HT-Tracker - Habits</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="window">
+        <div class="title-bar">
+        <div class="title-bar-text">Habit Tracker 98</div>
+        <div class="title-bar-controls">
+            <div class="title-btn">_</div>
+            <div class="title-btn">[]</div>
+            <div class="title-btn">X</div>
+        </div>
+        </div>
+    
+        <div class="window-body">
+        <h2>LOGIN</h2>
+        <form method="post" action="/users/login/form">
+            <input type="email" name="email" placeholder="Enter email..." required autocomplete="off">
+            <input type="password" name="hashed_password" placeholder="Enter password..." required autocomplete="off">
+            <button type="submit">Login</button>
+        </form>
+
+        <p>Don't have an account? <a href="/user/register">Register here</a></p>
+
+        <div class="status-bar">
+            <p style="margin: 0;">User Management</p>
+        </div>
+        </div>
+    </div>
+</body>
+
+</html>

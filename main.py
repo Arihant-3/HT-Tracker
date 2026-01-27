@@ -17,10 +17,10 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 
 
-# Root route redirects to /habits
+# Root route redirects to login
 @app.get("/", include_in_schema=False)
 def root():
-    return RedirectResponse(url="/habits")
+    return RedirectResponse(url="/user/login")
 
 
 from app.routes.habit import router as habit_router
@@ -31,6 +31,8 @@ from app.routes.habitlog import router as habitlog_router
 app.include_router(habitlog_router)
 
 
+from app.routes.user import router as user_router
+app.include_router(user_router)
 
 
 # Run the FastAPI server
