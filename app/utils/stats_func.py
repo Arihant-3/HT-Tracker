@@ -16,7 +16,8 @@ def check_data_sufficiency(first_day: date, required_days: int) -> bool:
 
 def prepare_daily_aggregation_list(
     session, 
-    habit_id: int, 
+    habit_id: int,
+    user_id: int,
     required_days: int, 
     end_date: date = date.today()
 ):
@@ -35,6 +36,7 @@ def prepare_daily_aggregation_list(
         )
         .where(
             (HabitLog.habit_id == habit_id) &
+            (HabitLog.user_id == user_id) &
             (HabitLog.date >= start_date) &
             (HabitLog.date <= end_date)
         )

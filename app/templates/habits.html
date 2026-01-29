@@ -15,9 +15,14 @@
         <div class="title-btn">[]</div>
         <div class="title-btn">X</div>
       </div>
-    </div>
+    </div> 
 
     <div class="window-body">
+      <div style="margin-bottom: 20px;">
+                <a href="/{{ user_id }}/account">
+                    << Account</a>
+            </div>
+
       <h2>Create New Habit</h2>
       <form method="post" action="/habit/form">
         <input type="text" name="name" placeholder="Enter habit name..." required autocomplete="off">

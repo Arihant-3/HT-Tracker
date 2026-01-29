@@ -17,10 +17,16 @@
         </div>
         </div>
 
-        
+
+        {% if request.headers.get("X-Error") %}
+            <div class="error-message">
+                {{ request.headers.get("X-Error") }}
+            </div>
+        {% endif %}
+
         <div class="window-body">
             <h2>REGISTER</h2>
-            <form method="post" action="/user/register">
+            <form method="post" action="/user/register/form">
                 <input type="text" name="username" placeholder="Enter username..." required autocomplete="off">
                 <input type="email" name="email" placeholder="Enter email..." required autocomplete="off">
                 <input type="text" name="password" placeholder="Enter password..." required autocomplete="off">

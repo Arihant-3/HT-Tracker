@@ -3,6 +3,7 @@ from datetime import date, datetime
 from typing import Optional, List
 
 class HabitCreate(BaseModel):
+    user_id: int
     name: str
     category: Optional[str] = None
     
@@ -10,6 +11,7 @@ class HabitRead(BaseModel):
     id: int
     
 class HabitLogCreate(BaseModel):
+    user_id: int
     habit_id: int
     date: date
     value: int

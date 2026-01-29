@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HT-Tracker - Account</title>
+  <link rel="stylesheet" href="/static/style.css">
+
+</head>
+
+<body>
+  <div class="window">
+    <div class="title-bar">
+      <div class="title-bar-text">Habit Tracker 98</div>
+      <div class="title-bar-controls">
+        <div class="title-btn">_</div>
+        <div class="title-btn">[]</div>
+        <div class="title-btn">X</div>
+      </div>
+    </div>
+
+    <div class="window-body">
+      <h2>Account Information</h2>
+      <p><strong>Username:</strong> {{ username }}</p>
+      <p><strong>Email:</strong> {{ email }}</p>
+
+      <form method="get" action="/habits" style="display: inline;"> 
+        <button type="submit" style="margin-right: 10px;">Go to Habits</button>
+      </form>
+
+      <form method="post" action="/logout" style="display: inline;">
+        <button type="submit" style="margin-right: 10px;">Logout</button>
+      </form>
+
+      <form method="post" action="/delete" style="display: inline;">
+        <button type="submit" style="margin-right: 10px; background-color: #ff4d4d; color: white;">Delete Account</button>
+      </form>
+    </div>
+
+    <div class="status-bar">
+      <p style="margin: 0;">User Management</p>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-title">Are you sure?</div>
+      <div class="modal-text">This will permanently delete your account and all associated data.</div>
+      <div class="modal-actions">
+        <button id="cancelBtn" class="btn-secondary" style="min-width: 80px;">Cancel</button>
+        <button id="confirmBtn" class="btn-danger" style="min-width: 80px;">Delete</button>
+      </div>
+    </div>
+    </div>
+
+  <script src="/static/script/confirm-modal.js"></script>
+
+</body>
+
+</html>
