@@ -14,10 +14,17 @@ def get_current_user(
     user_id = request.cookies.get("user_id")
 
     if not user_id:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+        # Redirect instead of 401
+        raise HTTPException(
+            status_code=303,
+            headers={"Location": "/user/login"}
+        )
 
     user = session.get(User, int(user_id))
     if not user:
-        raise HTTPException(status_code=401, detail="Invalid user")
+        raise HTTPException(
+            status_code=303,
+            headers={"Location": "/user/login"}
+        )
 
     return user

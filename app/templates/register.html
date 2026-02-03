@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>HT-Tracker - Habits</title>
+  <title>HT-Tracker</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 
@@ -17,13 +17,6 @@
         </div>
         </div>
 
-
-        {% if request.headers.get("X-Error") %}
-            <div class="error-message">
-                {{ request.headers.get("X-Error") }}
-            </div>
-        {% endif %}
-
         <div class="window-body">
             <h2>REGISTER</h2>
             <form method="post" action="/user/register/form">
@@ -32,6 +25,13 @@
                 <input type="text" name="password" placeholder="Enter password..." required autocomplete="off">
                 <button type="submit">Create User</button>
             </form>
+
+            {% if request.cookies.get("flash") %}
+            <div style="margin-bottom: 10px;"></div>
+                <div class="alert-error">
+                {{ request.cookies.get("flash") }}
+                </div>
+            {% endif %}
             
         <p>Already have an account? <a href="/user/login">Login here</a></p>
         

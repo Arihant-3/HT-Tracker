@@ -331,6 +331,16 @@ div[style*="border-top"] {
     animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Error */
+.alert-error {
+    background: #FEE2E2;
+    color: #B91C1C;
+    border: 1px solid #FCA5A5;
+    padding: 12px 16px;
+    border-radius: var(--radius-elem);
+    margin-bottom: 16px;
+}
+
 @keyframes popIn {
     from {
         transform: scale(0.9);

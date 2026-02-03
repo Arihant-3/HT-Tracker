@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>HT-Tracker - Habits</title>
+  <title>HT-Tracker</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 
@@ -30,6 +30,13 @@
         <button type="submit">Add Habit</button>
       </form>
 
+      {% if request.cookies.get("flash") %}
+      <div style="margin-bottom: 10px;"></div>
+        <div class="alert-error">
+          {{ request.cookies.get("flash") }}
+        </div>
+      {% endif %}
+      
       <div style="margin: 20px 0; border-top: 2px solid #808080; border-bottom: 2px solid #ffffff; height: 0;"></div>
 
       <h2>Active Habits</h2>

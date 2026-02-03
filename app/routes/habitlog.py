@@ -9,7 +9,7 @@ from app.dependencies.auth import get_current_user
 # For templates and forms
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
-from fastapi import Request, Form, HTTPException
+from fastapi import Request, Form
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -60,8 +60,6 @@ def habitlog_page(
     user_id = current_user.id
     
     habit = session.get(Habit, habit_id)
-    if not habit:
-        raise HTTPException(status_code=404, detail="Habit not found")
     
     logs = session.exec(
         select(HabitLog).where(
@@ -104,9 +102,7 @@ def get_stats(
     user_id = current_user.id
     # Get habit details
     habit = session.get(Habit, habit_id)
-    if not habit:
-        raise HTTPException(status_code=404, detail="Habit not found")
-  
+
     # Calculate weekly stats
     week_day = 7
     
@@ -164,9 +160,7 @@ def delete_log(
 ):
     
     log = session.get(HabitLog, log_id)
-    if not log:
-        raise HTTPException(status_code=404, detail="Log not found")
-        
+
     habit_id = log.habit_id
     session.delete(log)
     session.commit()

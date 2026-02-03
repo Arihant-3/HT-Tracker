@@ -6,7 +6,7 @@ from app.dependencies.auth import get_current_user
 # For templates and forms
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
-from fastapi import Request, Form, HTTPException
+from fastapi import Request, Form
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -35,8 +35,10 @@ def create_habit(
     existing_habit = session.exec(stmt).first()
 
     if existing_habit:
-        raise HTTPException(status_code=400, detail="Habit with this name already exists")
-    
+        response = RedirectResponse(url="/habits", status_code=303)
+        response.set_cookie(key="flash", value="Habit with this name already exists", max_age=3)
+        return response
+        
     db_habit = schemas.HabitCreate(
         user_id = user_id,
         name = name,
@@ -50,7 +52,10 @@ def create_habit(
 
     return RedirectResponse(url=f"/habits", status_code=303)
 
-
+# Guard route to prevent GET on habit/form
+@router.get("/habit/form")
+def habit_form_guard():
+    return RedirectResponse("/habits", status_code=303)
 
 @router.get("/habits")
 def habits_page(
@@ -59,6 +64,8 @@ def habits_page(
     session: Session = Depends(get_session)
 ):
 
+    flash_message = request.cookies.get("flash")
+    
     user_id = current_user.id
     username = session.get(User, user_id).username
 
@@ -74,7 +81,7 @@ def habits_page(
                                ''')
     habits = session.exec(count_log_per_habit, params={"user_id": user_id}).all()
     
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         "habits.html",
         {
             "request": request, 
@@ -84,6 +91,12 @@ def habits_page(
             "username": username
         }
     )
+    
+    if flash_message:
+        response.delete_cookie("flash")
+        
+    return response
+    
 
 
 # Delete a habit and its logs
@@ -95,7 +108,9 @@ def delete_habit(
 
     habit = session.get(Habit, habit_id)
     if not habit:
-        raise HTTPException(status_code=404, detail="Habit not found")
+        response = RedirectResponse(url="/habits", status_code=303)
+        response.set_cookie(key="flash", value="Habit not found", max_age=3)
+        return response
     
     # Delete associated logs first
     logs = session.exec(select(HabitLog).where(HabitLog.habit_id == habit_id)).all()

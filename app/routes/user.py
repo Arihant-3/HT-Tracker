@@ -21,7 +21,6 @@ import app.schemas as schemas
 from app.database import get_session
 
 # Create/Register a new user
-
 @router.post("/user/register/form")
 def create_user(
     username: str = Form(...),
@@ -37,8 +36,9 @@ def create_user(
     existing_user = session.exec(stmt).first()
     
     if existing_user:
-        return RedirectResponse(url="/user/register", status_code=303, 
-                                headers={"X-Error": "Username or email already exists"})
+        response = RedirectResponse(url="/user/register", status_code=303)
+        response.set_cookie(key="flash", value="Username or email already exists", max_age=3)
+        return response
     
     db_user = schemas.UserCreate(
         username=username,
@@ -94,8 +94,15 @@ def login_user(
     stmt1 = select(User).where(User.email == email)
     user = session.exec(stmt1).first()
     
-    if not user or not verify_password(password_attempt, user.hashed_password):
-        return RedirectResponse(url="/user/login", status_code=303)
+    if not user:
+        response = RedirectResponse(url="/user/login", status_code=303)
+        response.set_cookie(key="error_login", value="User not found", max_age=3)
+        return response
+    
+    if not verify_password(password_attempt, user.hashed_password):
+        response = RedirectResponse(url="/user/login", status_code=303)
+        response.set_cookie(key="error_login", value="Invalid password", max_age=3)
+        return response
     
     # Adding cookie or session management can be done here
     response = RedirectResponse(url=f"/{user.id}/account", status_code=303)
@@ -120,9 +127,7 @@ def get_account_page(
     user_id = current_user.id
     
     user = session.get(User, user_id)
-    if not user:
-        return RedirectResponse(url="/user/login", status_code=303)
-
+    
     username = user.username
     email = user.email 
     
@@ -137,7 +142,9 @@ def get_account_page(
     )
 
 @router.post("/logout")
-def logout_user():
+def logout_user(
+    current_user: User = Depends(get_current_user)
+):
     """
     User logout.
     """
@@ -159,8 +166,6 @@ def delete_user(
     user_id = current_user.id
     
     user = session.get(User, user_id)
-    if not user:
-        return RedirectResponse(url="/user/login", status_code=303)
     
     # Delete associated habits and logs
     habits = session.exec(select(Habit).where(Habit.user_id == user_id)).all()
