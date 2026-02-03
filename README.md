@@ -1,133 +1,135 @@
 # Habit & Time Tracker with Analytics
 
-A backend-focused web application to track habits, log daily activity, and generate meaningful time-based analytics.
+A backend-focused habit tracking application built with **FastAPI**, **SQLModel**, and **MySQL**, designed to evolve from a single-user analytics system into a secure, multi-user, production-ready backend.
 
-This project was built incrementally (day-by-day) with a strong emphasis on **backend architecture**, **relational data modeling**, and **SQL analytics**, rather than UI frameworks or authentication.
+HT-Tracker emphasizes **clean backend architecture**, **relational data modeling**, **schema evolution**, and **auth-driven design** over frontend complexity.
 
 ---
 
-## 🚀 What This Project Does
+## 🚀 What’s New in V2
 
-- Create and manage habits
-- Log daily activity (time spent in minutes)
-- View recent logs and daily summaries
-- Generate **weekly analytics**, including:
-    - Total minutes logged (last 7 days)
-    - Average minutes per day
-    - Per-day breakdown (including zero-activity days)
-- Gracefully handles edge cases (e.g. insufficient data)
-- Clean, minimal UI with confirmation dialogs for destructive actions
+HT-Tracker V2 is a **major architectural upgrade** over v1.
+
+### Core Improvements
+
+- Full **multi-user support**
+- User authentication with **secure password hashing (Argon2)**
+- Session-based authentication with HTTP-only cookies
+- Per-user data isolation (`user_id` enforced at DB + route level)
+- Modular FastAPI architecture using `APIRouter`
+- Production-grade **MySQL** database
+- Schema management via **Alembic**
+- Hardened routing, auth flow, and UX feedback
+
+V1 was intentionally frozen and shipped before introducing these changes.
 
 ---
 
 ## 🧠 Why This Project Exists
 
-Most beginner projects stop at basic CRUD.
+Most habit trackers stop at CRUD.
 
-This project intentionally goes further by focusing on:
+HT-Tracker goes deeper by focusing on:
 
-- Parent → child relational modeling
-- SQL aggregation and analytics
-- Time-windowed statistics
-- Defensive backend programming
-- Clean separation of concerns
-- Shipping a complete, working system (v1)
+- Relational modeling (`User -> Habit -> HabitLog`)
+- Schema evolution and migrations
+- Authentication boundaries
+- Backend-driven UX decisions
+- Defensive system design
+- Shipping **real, complete versions**
 
-Authentication and multi-user support are **intentionally deferred** to v2 to keep v1 focused and shippable.
+V2 reflects how real backend systems grow -- by breaking, learning, and stabilizing.
 
 ---
 
-## 🏗️ Architecture Overview
+## 🏗️ Architecture Overview (V2)
 
-### Entities (v1)
+### Core Entities
+
+**User**
+
+- `id`
+- `username`
+- `email`
+- `hashed_password`
 
 **Habit**
 
 - `id`
+- `user_id`
 - `name`
 - `category`
 
 **HabitLog**
 
 - `id`
+- `user_id`
 - `habit_id`
 - `date`
 - `value` (minutes)
 - `note` (optional)
 
-Relationship:
+### Relationships
 
 ```
-Habit (1) → HabitLog (many)
-
+User (1)
+ ├── Habit (many)
+       └── HabitLog (many)
+ 
 ```
+
+All data access is scoped through the authenticated user.
+
+---
+
+## 🔐 Authentication & Security
+
+- Passwords are **never stored in plain text**
+- Password hashing uses **Argon2**
+- Authentication is enforced via a centralized `get_current_user`
+- Routes are fully protected (redirect-based, not raw 401s)
+- Cookies are:
+    - HTTP-only
+    - Secure in production
+    - Cleared cleanly on logout
+
+Security decisions are explicit, not accidental.
 
 ---
 
 ## 🛠️ Tech Stack
 
 - **Backend:** FastAPI
-- **ORM:** SQLModel
+- **ORM:** SQLModel (SQLAlchemy)
 - **Migrations:** Alembic
-- **Database:** SQLite (v1)
+- **Database:** MySQL 8.0 (InnoDB, utf8mb4)
+- **Auth:** Session-based (cookies)
+- **Hashing:** Argon2
 - **Templates:** Jinja2
-- **Analytics:** SQL (`GROUP BY`, `SUM`, `COUNT`) + ORM functions
-- **Frontend:** Server-rendered HTML + minimal CSS + vanilla JS
+- **Server:** Uvicorn + (Gunicorn recommended for higher concurrency)
+- **Dependency Management:** uv
 
 ---
 
-## 📊 Analytics & Stats (v1)
-
-- Weekly stats are computed using a **7-day rolling window**
-- Missing days are explicitly filled with `0` values
-- Stats are only generated if sufficient data exists
-- Analytics logic is isolated from routes for clarity and reuse
-
-This ensures stats are **accurate, honest, and defensively computed**.
-
----
-
-## ⚠️ Current Limitations (Intentional)
-
-- Single-user only
-- No authentication
-- Data is global (not user-isolated)
-- SQLite used for simplicity
-
-These are **design decisions**, not missing features.
-
----
-
-## 🔮 Planned v2 (Post-v1)
-
-- Authentication (custom crypto-based or OAuth)
-- User model and per-user data isolation
-- `user_id` added to Habit and HabitLog
-- Route modularization
-- Optional DB upgrade (SQLite → MySQL/PostgreSQL)
-
-v1 is frozen and released before starting v2.
-
----
-
-## ▶️ Running Locally
-
+## ⚙️ Local Development
 
 This project uses **uv** for dependency management.
 
+### Setup
+
 ```bash
-# install dependencies (using uv)
-uv sync
+# install dependencies
+uvsync
 
-# run migrations
-alembic -c app/alembic.ini upgrade head
+# apply migrations
+alembic -c app/alembic.ini upgradehead
 
-# start server
-uvicorn main:app --reload
+# start dev server
+uvicorn app.main:app --reload
 
 ```
 
-Then open:
+Open:
 
 ```
 http://localhost:8000
@@ -142,27 +144,71 @@ Optional (but nice):
 
 ---
 
+## 🔐 Environment Variables
+
+All sensitive configuration is environment-based.
+
+```
+DB_HOST
+DB_PORT
+DB_USER
+DB_PASSWORD
+DB_NAME
+
+ENV=development | production
+SECRET_KEY
+
+```
+
+> .env files are intentionally excluded from version control.
+> 
+
+---
+
+## 🗄️ Database & Migrations
+
+- Alembic is the **single source of truth** for schema changes
+- `create_all()` is intentionally **not used**
+- SQLite was used in v1; MySQL is the production target in v2
+- Migration history was reset during the SQLite -> MySQL transition to ensure correctness
+
+This mirrors real-world backend evolution.
+
+---
+
+## 🌍 Deployment
+
+- Production runs via **uvicorn** (Gunicorn recommended for higher concurrency)
+- MySQL credentials are injected via environment variables
+- Static files are served by FastAPI
+- Designed for deployment on platforms like **Render**
+
+---
+
 ## 📦 Versioning
 
-- **Current stable release:** `v1.0.0`
-- Versioning follows semantic versioning
-- v1 focuses on core system + analytics
-- v2 will introduce authentication and multi-user support
+- **v1.0.0** -- Single-user, analytics-focused, SQLite
+- **v2.0.0** -- Multi-user, authenticated, MySQL-backed
+
+Semantic versioning is followed strictly.
 
 ---
 
 ## 🎯 Key Learnings Demonstrated
 
-- Relational database modeling
-- SQL aggregation and analytics
-- Time-series data handling
-- Defensive backend design
-- Clean FastAPI architecture
-- Shipping a complete product
+- Relational data modeling
+- Schema evolution & migrations
+- Authentication design
+- Secure password handling
+- Route protection & UX alignment
+- Environment-based configuration
+- SQLite -> MySQL migration strategy
+- Shipping stable versions
 
----
 
 ## 📌 Status
 
-- ✅ v1 complete and ready for deployment
-- 🚧 v2 planned (authentication & multi-user)
+- ✅ V2.0.0 finalized
+- 🔒 Secure by design
+- 🧱 Clean migration baseline established
+

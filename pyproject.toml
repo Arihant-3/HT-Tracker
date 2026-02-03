@@ -1,6 +1,6 @@
 [project]
 name = "ht-tracker"
-version = "1.0.0"
+version = "2.0.0"
 description = "A simple, structured end-to-end project, developed to learn backend architecture, database migrations, and full-stack integration."
 authors = [
     { name = "Aryan Burnwal", email = "work.aburnwal@gmail.com" }
