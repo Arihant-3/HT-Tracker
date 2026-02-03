@@ -1,6 +1,6 @@
 # Habit & Time Tracker with Analytics
 
-A backend-focused habit tracking application built with **FastAPI**, **SQLModel**, and **MySQL**, designed to evolve from a single-user analytics system into a secure, multi-user, production-ready backend.
+A backend-focused habit tracking application built with **FastAPI**, **SQLModel**, and **PostgreSQL**, designed to evolve from a single-user analytics system into a secure, multi-user, production-ready backend.
 
 HT-Tracker emphasizes **clean backend architecture**, **relational data modeling**, **schema evolution**, and **auth-driven design** over frontend complexity.
 
@@ -17,7 +17,7 @@ HT-Tracker V2 is a **major architectural upgrade** over v1.
 - Session-based authentication with HTTP-only cookies
 - Per-user data isolation (`user_id` enforced at DB + route level)
 - Modular FastAPI architecture using `APIRouter`
-- Production-grade **MySQL** database
+- Production-grade **PostgreSQL** / **MySQL** database
 - Schema management via **Alembic**
 - Hardened routing, auth flow, and UX feedback
 
@@ -102,7 +102,7 @@ Security decisions are explicit, not accidental.
 - **Backend:** FastAPI
 - **ORM:** SQLModel (SQLAlchemy)
 - **Migrations:** Alembic
-- **Database:** MySQL 8.0 (InnoDB, utf8mb4)
+- **Database:** PostgreSQL / MySQL 8.0 (InnoDB, utf8mb4)
 - **Auth:** Session-based (cookies)
 - **Hashing:** Argon2
 - **Templates:** Jinja2
@@ -169,8 +169,8 @@ SECRET_KEY
 
 - Alembic is the **single source of truth** for schema changes
 - `create_all()` is intentionally **not used**
-- SQLite was used in v1; MySQL is the production target in v2
-- Migration history was reset during the SQLite -> MySQL transition to ensure correctness
+- SQLite was used in v1; MySQL or PostgreSQL is the production target in v2
+- Migration history was reset during the SQLite -> MySQL or PostgreSQL transition to ensure correctness
 
 This mirrors real-world backend evolution.
 
@@ -179,7 +179,7 @@ This mirrors real-world backend evolution.
 ## 🌍 Deployment
 
 - Production runs via **uvicorn** (Gunicorn recommended for higher concurrency)
-- MySQL credentials are injected via environment variables
+- MySQL/PostgreSQL credentials are injected via environment variables
 - Static files are served by FastAPI
 - Designed for deployment on platforms like **Render**
 
@@ -188,7 +188,7 @@ This mirrors real-world backend evolution.
 ## 📦 Versioning
 
 - **v1.0.0** -- Single-user, analytics-focused, SQLite
-- **v2.0.0** -- Multi-user, authenticated, MySQL-backed
+- **v2.0.0** -- Multi-user, authenticated, PostgreSQL-backed
 
 Semantic versioning is followed strictly.
 
@@ -202,7 +202,7 @@ Semantic versioning is followed strictly.
 - Secure password handling
 - Route protection & UX alignment
 - Environment-based configuration
-- SQLite -> MySQL migration strategy
+- SQLite -> MySQL migration strategy and In production PostgreSQL
 - Shipping stable versions
 
 
